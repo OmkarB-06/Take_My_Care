@@ -1,0 +1,20 @@
+const OPT={rest:['Very rested','Reasonably rested','Somewhat tired','Very tired'],load:['Light','Moderate','High','Very high'],mood:['Very good','Good','Okay','Low']};
+const riskOf=s=>s<=3?'Low':s<=6?'Medium':'High';
+const DAYS=['18 Sep','11 Sep','4 Sep','28 Aug'];
+const mkHist=p=>p.ck.map((c,i)=>({d:DAYS[i],m:OPT.mood[c[2]],rq:OPT.rest[c[0]],rest:[8,7,6,5][c[0]]+'h',load:OPT.load[c[1]],risk:riskOf(c[0]+c[1]+c[2]),w:p.hw[i],sup:(p.sp||{})[i]||'—'}));
+const DB={trend:{l:['May','Jun','Jul','Aug','Sep']},
+officers:[{id:'OF-201',n:'Officer Priya',un:'priya',units:['Unit A','Unit C']},{id:'OF-202',n:'Officer Vikram',un:'vikram',units:['Unit B','Unit D']}],
+people:[
+['Aarav Sharma','PF-1042','Unit C','Field Operations','Stable',[[1,1,1],[2,2,2],[1,1,1],[2,2,2]],[78,70,68,66],[62,65,64,70,78],[6.4,6.8,6.6,7,7.2],[3,3,4,3,2],{1:'Follow-up',3:'Welfare chat'},12,4,3],
+['Rohan Kumar','PF-1028','Unit B','Field Operations','Low rest + sustained high workload',[[3,3,2],[2,3,2],[2,2,2],[1,2,1]],[52,55,60,63],[68,64,60,56,52],[6.4,6,5.6,5.2,4.8],[3,3,4,4,4],{0:'Requested support',2:'Follow-up scheduled'},9,1,2],
+['Meera Singh','PF-1091','Unit A','Logistics','Wellness trend changed',[[2,2,1],[1,2,1],[1,1,1],[1,1,0]],[64,66,70,72],[72,71,70,67,64],[7,6.8,6.6,6.3,6.1],[2,2,3,3,3],{1:'Welfare chat'},10,2,2],
+['Kavya Reddy','PF-1017','Unit A','Communications','Stable, consistent rest',[[0,1,1],[1,1,0],[1,1,1],[0,1,0]],[84,83,81,80],[76,78,80,82,84],[7.2,7.4,7.5,7.6,7.8],[2,2,2,1,2],{},14,6,0],
+['Arjun Patel','PF-1033','Unit B','Logistics','Rest declining over three weeks',[[2,2,1],[1,2,2],[1,1,2],[1,1,1]],[61,63,64,68],[69,67,66,64,61],[6.6,6.4,6.2,6,5.9],[2,3,3,3,3],{2:'Welfare chat'},8,3,1],
+['Sneha Iyer','PF-1056','Unit C','Medical Support','Stable',[[1,1,0],[1,0,1],[1,1,1],[1,1,1]],[80,79,78,77],[74,75,77,78,80],[6.8,7,7,7.1,7.2],[2,2,2,2,2],{},13,5,1],
+['Imran Sheikh','PF-1064','Unit D','Field Operations','Sustained high workload + declining wellness',[[3,3,3],[2,3,2],[2,3,3],[2,2,2]],[49,52,55,58],[66,62,59,55,49],[6.2,5.8,5.4,5,4.6],[3,4,4,4,4],{0:'Follow-up',2:'Welfare chat'},7,0,3],
+['Deepak Joshi','PF-1072','Unit D','Rescue Operations','Workload elevated, mood steady',[[2,2,2],[1,2,1],[1,2,2],[1,1,1]],[66,67,66,70],[72,70,68,67,66],[6.5,6.4,6.3,6.2,6.2],[2,3,3,3,3],{},11,2,1],
+['Ananya Das','PF-1085','Unit C','Communications','Stable, improving trend',[[0,1,0],[1,1,0],[0,1,1],[1,1,1]],[88,86,86,84],[80,82,84,86,88],[7.4,7.6,7.6,7.8,8],[2,2,1,2,1],{},15,8,0],
+['Harpreet Gill','PF-1099','Unit B','Rescue Operations','High workload for several weeks',[[2,2,1],[2,2,2],[1,2,1],[1,1,1]],[63,62,65,69],[70,68,66,65,63],[6.3,6.2,6,6,5.9],[3,3,3,3,3],{1:'Welfare chat'},9,2,1]
+].map(a=>{const p={n:a[0],id:a[1],u:a[2],r:a[3],pat:a[4],ck:a[5],hw:a[6],tr:a[7],rs:a[8],ld:a[9],sp:a[10],ci:a[11],st:a[12],sr:a[13]};p.un=p.n.split(' ')[0].toLowerCase();p.w0=p.hw[0];p.h=mkHist(p);return p})};
+DB.req=[['PF-1028','Workload/rest discussion','Finding it hard to rest between shifts.','PENDING',1],['PF-1091','General welfare conversation','','PENDING',1],['PF-1042','Follow-up','Checking in after last month.','ACCEPTED',0],['PF-1064','General welfare conversation','Long duty stretches lately.','PENDING',1],['PF-1033','Workload/rest discussion','Rest has been short this month.','FOLLOW-UP',0],['PF-1099','General welfare conversation','','COMPLETED',0],['PF-1072','Other','Would like to discuss the duty roster.','PENDING',0]].map((a,i)=>{const p=DB.people.find(x=>x.id==a[0]);return{id:i+1,by:p.n,pid:p.id,unit:p.u,type:a[1],msg:a[2],status:a[3],today:a[4]}});
+DB.fu=[['PF-1028','Sustained high workload','15 Sep','25 Sep','Pending'],['PF-1064','Declining wellness pattern','16 Sep','24 Sep','Pending'],['PF-1091','Wellness trend changed','14 Sep','27 Sep','Scheduled'],['PF-1033','Rest declining','12 Sep','28 Sep','Scheduled'],['PF-1042','Post-workload check','11 Sep','18 Sep','Completed'],['PF-1099','Post-request check-in','10 Sep','17 Sep','Completed']].map((a,i)=>({id:i+1,n:DB.people.find(x=>x.id==a[0]).n,pid:a[0],reason:a[1],created:a[2],due:a[3],status:a[4]}));
